@@ -15,20 +15,26 @@ Or reference the project directly.
 ```csharp
 using Elliptica;
 
-// secp256k1 curve: y² = x³ + 7 (mod p)
-var curve = new EllipticCurve(a: 0, b: 7, p: 
-    BigInteger.Parse("115792089237316195423570985008687907853269984665640564039457584007908834671663"));
+// Use secp256k1 curve (Bitcoin/Ethereum standard)
+var curve = EllipticCurve.Secp256k1;
 
-var generator = new Point(
-    BigInteger.Parse("550662630242773942802979101730321503127763527812763029367159444450498790520"),
-    BigInteger.Parse("32670510020758816978083085130507043184471273380659243275938904335757337482424")
+// Generate key pair
+var (privateKey, publicKey) = curve.GenerateKeyPair();
+Console.WriteLine($"Private: {privateKey}");
+Console.WriteLine($"Public:  {publicKey}");
+
+// Verify public key is on curve
+bool valid = curve.Verify(publicKey);
+
+// Custom curve
+var custom = new EllipticCurve(
+    a: 0, b: 7, p: BigInteger.Parse("..."),
+    generator: new Point(x, y),
+    order: BigInteger.Parse("...")
 );
 
 // Scalar multiplication
-var privateKey = BigInteger.Parse("123456789012345678901234567890");
-var publicKey = curve.Multiply(privateKey, generator);
-
-Console.WriteLine($"Public key: {publicKey}");
+var point = curve.MultiplyByG(privateKey);
 ```
 
 ## Mathematical Background
